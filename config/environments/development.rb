@@ -3,12 +3,15 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  config.hosts << "13a6-2405-201-d01d-f05c-4dd4-9f6a-862c-43f2.ngrok-free.app"
+
   # Make code changes take effect immediately without server restart.
   config.enable_reloading = true
 
   # Do not eager load code on boot.
   config.eager_load = false
-
+  
+  config.hosts << "04ad-2405-201-d01d-f05c-5095-c896-1e5a-304e.ngrok-free.app"
   # Show full error reports.
   config.consider_all_requests_local = true
 

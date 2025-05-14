@@ -1,64 +1,40 @@
-require 'yaml'
 class UsersController < ApplicationController
-  before_action :load_districts_and_talukas
-
-  def signup_page
-    @user = User.new
-    render json: { user: @user, districts: @districts, talukas: @talukas }
-  end
+  before_action :set_user_by_session, only: [:logout]
 
   def signup
     @user = User.new(user_params)
-
-    if @user.role == "buyer"
-      @user.verified = true
-    end
+    @user.verified = true if @user.role == "buyer"
 
     if @user.save
-      session[:user_id] = @user.phone
-      redirect_to root_path, notice: "Successfully Signed Up!"
+      render json: { message: "Successfully Signed Up", user: user_response(@user) }, status: :created
     else
-      render :signup_page, status: :unprocessable_entity
+      render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
     end
-
   end
-
-
-  def login_page; end
 
   def login
     phone = params[:phone]
     @user = User.find_by(phone: phone)
 
     if @user
-      session[:user_id] = @user.phone
-      redirect_to root_path, notice: "Successfully Logged In!"
+      render json: { message: "Successfully Logged In", user: user_response(@user) }, status: :ok
+    else
+      render json: { error: "Invalid phone number" }, status: :unauthorized
     end
   end
 
   def logout
-    session.clear
-    redirect_to root_path, notice: "Successfully Logged Out!"
+    render json: { message: "Successfully Logged Out" }, status: :ok
   end
 
-  def settings
-    @user = User.find_by(phone: session[:user_id])
-  end
 
-  def settings_save
-    @user = User.find_by(phone: session[:user_id])
-    @user.update!(user_params)
-    redirect_to settings_path, notice: "Saved!"
-
-  end
 
   def talukas
     india_data = YAML.load_file(Rails.root.join('config', 'India.yml'))
     district = params[:id]
     talukas = india_data.select { |_, data| data[:district] == district }.map { |_, data| data[:city] }.uniq
-    render json: talukas
+    render json: talukas, status: :ok
   end
-
 
   private
 
@@ -66,11 +42,19 @@ class UsersController < ApplicationController
     params.require(:user).permit(:name, :phone, :role, :district, :taluka)
   end
 
-  def load_districts_and_talukas
-    india_data = YAML.load_file(Rails.root.join('config', 'India.yml'))
-    @districts = india_data.values.map { |data| data[:district] }.uniq
-    @talukas = india_data.values.map { |data| data[:city] }.uniq
+  def set_user_by_session
+    @user = User.find_by(phone: params[:phone])
   end
-  
-  
+
+  def user_response(user)
+    {
+      id: user.id,
+      name: user.name,
+      phone: user.phone,
+      role: user.role,
+      district: user.district,
+      taluka: user.taluka,
+      verified: user.verified
+    }
+  end
 end
