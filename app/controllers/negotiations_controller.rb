@@ -1,6 +1,6 @@
 class NegotiationsController < ApplicationController
   before_action :set_negotiation, only: %i[update destroy]
-  before_action :authenticate_buyer
+  #before_action :authenticate_buyer
 
   def index
     buyer = User.find_by(phone: params[:phone]) 
