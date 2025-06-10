@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_18_085128) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_30_152722) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -20,6 +20,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_18_085128) do
     t.decimal "price", precision: 7, scale: 2
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "deal", default: false
     t.index ["proposal_id"], name: "index_negotiations_on_proposal_id"
     t.index ["user_id"], name: "index_negotiations_on_user_id"
   end

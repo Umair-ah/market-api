@@ -7,8 +7,14 @@ Rails.application.routes.draw do
 
   
   
-  resources :negotiations, except: %i[new show edit]
-  get "/index_negotiations", to: "negotiations#index_negotiations"
+  resources :negotiations, except: %i[new show edit] do 
+    post "/deal", to: "negotiations#deal", as: :deal
+    collection do
+      get :my_negotiations
+      get :index_negotiations
+    end
+  end
+
 
   resources :proposals, except: %i[new show edit]
 
